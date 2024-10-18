@@ -1,0 +1,84 @@
+import random
+
+class Player:
+    def __init__(self, name):
+        self.name = name
+        self.cards = []
+
+    def add_card(self, card):
+        self.cards.append(card)
+
+    def remove_card(self, card):
+        if card in self.cards:
+            self.cards.remove(card)
+
+    def show_cards(self):
+        print(f"{self.name}'s cards:")
+        for i, card in enumerate(self.cards, 1):
+            print(f"{i}. {card}")
+
+class CardGame:
+    def __init__(self, players):
+        self.players = players
+        # Assigning numerical values to each card in the order they appear in the list
+        self.cards = {
+            "Enhanced Havoc Shotgun": 13,
+            "Scar": 12,
+            "OG Double Pump": 11,
+            "Slurp Juice": 10,
+            "Chug Jug": 9,
+            "Heavy Sniper Rifle": 8,
+            "Med Kit": 7,
+            "Submachine gun": 6,
+            "Flowberry fizz": 5,
+            "Charged Shotgun": 4,
+            "RPG": 3,
+            "Grappler": 2,
+            "Mini's": 1
+        }
+        self.rounds = 5
+
+    def distribute_cards(self):
+        for player in self.players:
+            for _ in range(5):  # Distribute 5 cards to each player
+                card_name = random.choice(list(self.cards.keys()))
+                player.add_card(card_name)
+
+    def battle(self):
+        for round in range(1, self.rounds + 1):
+            print(f"\nRound {round}:\n")
+            round_winner = None
+            round_card_choices = {}
+
+            for player in self.players:
+                player.show_cards()
+                choice = int(input(f"\n{player.name}, choose a card (1-{len(player.cards)}): "))
+                if choice < 1 or choice > len(player.cards):
+                    print("Invalid choice! Skipping turn.")
+                    continue
+                card_name = player.cards[choice - 1]
+                card_rank = self.cards[card_name]  # Get the rank of the chosen card
+                print(f"{player.name} uses {card_name}!\n")
+                player.remove_card(card_name)
+                round_card_choices[player] = card_rank
+
+            winning_rank = max(round_card_choices.values())
+            winners = [player for player, rank in round_card_choices.items() if rank == winning_rank]
+
+            if len(winners) == 1:
+                round_winner = winners[0]
+
+            if round_winner:
+                print(f"Round {round} winner: {round_winner.name} with {winning_rank}")
+            else:
+                print(f"Round {round} ended in a tie!")
+
+def main():
+    num_players = int(input("Enter the number of players: "))
+    players = [Player(input(f"Enter player {i+1}'s Fortnite name: ")) for i in range(num_players)]      
+    game = CardGame(players)
+    game.distribute_cards()
+    game.battle()
+
+if __name__ == "__main__":
+    main()
